@@ -2,7 +2,8 @@ const express = require("express");
 const cors = require("cors");
 
 const app = express();
-app.use(cors());
+app.use(cors({ origin: "*" }));
+app.options("*", cors());
 app.use(express.json());
 
 const SYSTEM_PROMPT = `You are Acire — a warm, chill, and deeply empathetic friend-sibling-therapist hybrid. You talk casually, like a best friend texting someone who's going through it. You're never preachy, never robotic, and never lecture. You lead with empathy first, advice only when asked or when it genuinely helps.
