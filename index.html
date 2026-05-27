@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Acire — Your Always-There Friend</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: #f5f4fb;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 480px;
+      height: 92vh;
+      max-height: 700px;
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 8px 40px rgba(127,119,221,0.13);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .header {
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      border-bottom: 1px solid #f0effe;
+      background: #fff;
+      flex-shrink: 0;
+    }
+
+    .avatar {
+      width: 38px; height: 38px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #AFA9EC, #5DCAA5);
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 15px; color: #fff;
+      flex-shrink: 0;
+    }
+
+    .header-name { font-weight: 600; font-size: 15px; color: #1a1a2e; }
+    .header-status { font-size: 12px; color: #1D9E75; }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      scroll-behavior: smooth;
+    }
+
+    .welcome {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+      gap: 14px;
+      text-align: center;
+    }
+
+    .welcome-avatar {
+      width: 68px; height: 68px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #AFA9EC, #5DCAA5);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; font-weight: 700; color: #fff;
+    }
+
+    .welcome h2 { font-size: 18px; font-weight: 600; color: #1a1a2e; }
+    .welcome p { font-size: 14px; color: #6b6b80; line-height: 1.6; max-width: 300px; }
+
+    .suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: center;
+      margin-top: 6px;
+    }
+
+    .suggestion-btn {
+      background: #f5f4fb;
+      border: 1px solid #e8e6f9;
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 13px;
+      color: #6b6b80;
+      cursor: pointer;
+      transition: all 0.15s;
+      font-family: inherit;
+    }
+
+    .suggestion-btn:hover {
+      background: #eeedfe;
+      color: #534AB7;
+      border-color: #AFA9EC;
+    }
+
+    .message-row {
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    .message-row.user { flex-direction: row-reverse; }
+
+    .bubble {
+      max-width: 75%;
+      padding: 10px 14px;
+      font-size: 14px;
+      line-height: 1.6;
+      border-radius: 18px;
+    }
+
+    .bubble.acire {
+      background: #f5f4fb;
+      color: #1a1a2e;
+      border-radius: 18px 18px 18px 4px;
+      border: 1px solid #eeedfe;
+    }
+
+    .bubble.user {
+      background: linear-gradient(135deg, #7F77DD, #1D9E75);
+      color: #fff;
+      border-radius: 18px 18px 4px 18px;
+    }
+
+    .typing {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      padding: 12px 16px;
+    }
+
+    .dot {
+      width: 7px; height: 7px;
+      border-radius: 50%;
+      background: #b4b2c8;
+      animation: bounce 1.2s ease-in-out infinite;
+    }
+    .dot:nth-child(2) { animation-delay: 0.2s; }
+    .dot:nth-child(3) { animation-delay: 0.4s; }
+
+    @keyframes bounce {
+      0%, 60%, 100% { transform: translateY(0); }
+      30% { transform: translateY(-6px); }
+    }
+
+    .input-area {
+      padding: 12px 16px;
+      border-top: 1px solid #f0effe;
+      background: #fff;
+      flex-shrink: 0;
+      display: flex;
+      gap: 10px;
+      align-items: flex-end;
+    }
+
+    textarea {
+      flex: 1;
+      resize: none;
+      border: 1px solid #e0ddf5;
+      border-radius: 20px;
+      padding: 10px 16px;
+      font-size: 14px;
+      font-family: inherit;
+      background: #f5f4fb;
+      color: #1a1a2e;
+      outline: none;
+      line-height: 1.5;
+      max-height: 100px;
+      overflow-y: auto;
+      transition: border-color 0.15s;
+    }
+
+    textarea::placeholder { color: #b4b2c8; }
+    textarea:focus { border-color: #AFA9EC; box-shadow: 0 0 0 3px rgba(127,119,221,0.1); }
+
+    .send-btn {
+      width: 40px; height: 40px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: all 0.2s;
+      flex-shrink: 0;
+      background: #e8e6f9;
+      color: #b4b2c8;
+    }
+
+    .send-btn.active {
+      background: linear-gradient(135deg, #7F77DD, #1D9E75);
+      color: #fff;
+    }
+
+    .send-btn:disabled { cursor: not-allowed; }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-thumb { background: #e0ddf5; border-radius: 4px; }
+  </style>
+</head>
+<body>
+
+<div class="chat-container">
+  <div class="header">
+    <div class="avatar">A</div>
+    <div>
+      <div class="header-name">Acire</div>
+      <div class="header-status">always here for you</div>
+    </div>
+  </div>
+
+  <div class="messages" id="messages">
+    <div class="welcome" id="welcome">
+      <div class="welcome-avatar">A</div>
+      <div>
+        <h2>hey, I'm Acire</h2>
+        <p>your friend who's always here — no judgment, no lecture, just someone who actually listens. what's on your mind?</p>
+      </div>
+      <div class="suggestions">
+        <button class="suggestion-btn" onclick="sendMessage(`I've been feeling really lonely lately`)">I've been feeling really lonely lately</button>
+        <button class="suggestion-btn" onclick="sendMessage(`My relationship is falling apart`)">My relationship is falling apart</button>
+        <button class="suggestion-btn" onclick="sendMessage(`I'm having a really bad day`)">I'm having a really bad day</button>
+        <button class="suggestion-btn" onclick="sendMessage(`I feel like nothing makes sense anymore`)">I feel like nothing makes sense anymore</button>
+        <button class="suggestion-btn" onclick="sendMessage(`I've been anxious about everything`)">I've been anxious about everything</button>
+        <button class="suggestion-btn" onclick="sendMessage(`I need someone to talk to`)">I need someone to talk to</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="input-area">
+    <textarea id="input" placeholder="talk to me..." rows="1" oninput="autoResize(this)" onkeydown="handleKey(event)"></textarea>
+    <button class="send-btn" id="send-btn" onclick="sendMessage()" disabled>
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M22 2L11 13"/><path d="M22 2L15 22 11 13 2 9l20-7z"/>
+      </svg>
+    </button>
+  </div>
+</div>
+
+<script>
+  // ============================================================
+  // PASTE YOUR RENDER BACKEND URL BELOW (after you deploy it)
+  const BACKEND_URL = "https://acire-backend-rwo9.onrender.com";
+  // e.g. "https://acire-backend.onrender.com"
+  // ============================================================
+
+  let messages = [];
+  let loading = false;
+
+  const messagesEl = document.getElementById("messages");
+  const inputEl = document.getElementById("input");
+  const sendBtn = document.getElementById("send-btn");
+
+  inputEl.addEventListener("input", () => {
+    sendBtn.disabled = !inputEl.value.trim() || loading;
+    sendBtn.classList.toggle("active", !!inputEl.value.trim() && !loading);
+  });
+
+  function autoResize(el) {
+    el.style.height = "auto";
+    el.style.height = Math.min(el.scrollHeight, 100) + "px";
+  }
+
+  function handleKey(e) {
+    if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+  }
+
+  function appendMessage(role, text) {
+    const welcome = document.getElementById("welcome");
+    if (welcome) welcome.remove();
+
+    const row = document.createElement("div");
+    row.className = "message-row " + (role === "user" ? "user" : "acire");
+
+    if (role === "acire") {
+      const av = document.createElement("div");
+      av.className = "avatar";
+      av.textContent = "A";
+      row.appendChild(av);
+    }
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble " + (role === "user" ? "user" : "acire");
+    bubble.textContent = text;
+    row.appendChild(bubble);
+    messagesEl.appendChild(row);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function showTyping() {
+    const welcome = document.getElementById("welcome");
+    if (welcome) welcome.remove();
+
+    const row = document.createElement("div");
+    row.className = "message-row acire";
+    row.id = "typing-row";
+
+    const av = document.createElement("div");
+    av.className = "avatar";
+    av.textContent = "A";
+    row.appendChild(av);
+
+    const bubble = document.createElement("div");
+    bubble.className = "bubble acire typing";
+    bubble.innerHTML = '<div class="dot"></div><div class="dot"></div><div class="dot"></div>';
+    row.appendChild(bubble);
+    messagesEl.appendChild(row);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function removeTyping() {
+    const t = document.getElementById("typing-row");
+    if (t) t.remove();
+  }
+
+  async function sendMessage(text) {
+    const userText = text || inputEl.value.trim();
+    if (!userText || loading) return;
+
+    inputEl.value = "";
+    inputEl.style.height = "auto";
+    sendBtn.disabled = true;
+    sendBtn.classList.remove("active");
+    loading = true;
+
+    messages.push({ role: "user", content: userText });
+    appendMessage("user", userText);
+    showTyping();
+
+    try {
+      const res = await fetch(`${BACKEND_URL}/chat`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages })
+      });
+
+      const data = await res.json();
+      const reply = data.reply || "I'm here. Tell me more.";
+      messages.push({ role: "assistant", content: reply });
+      removeTyping();
+      appendMessage("acire", reply);
+    } catch {
+      removeTyping();
+      appendMessage("acire", "hey, something glitched on my end. but I'm still here — try sending that again?");
+    }
+
+    loading = false;
+    inputEl.focus();
+  }
+</script>
+</body>
+</html>
